@@ -79,7 +79,7 @@ def get_random_block_number(head_block: int, percentile: int):
 
 _templates_dir = Path(__file__).resolve().parent / 'templates'
 _binary_dir = Path(sys.executable).resolve().parent
-def install_sysmted_service(chain: str, url: str):
+def install_sysmted_service(chain: str, url: str, db: str = 'reports.db'):
     with (
         open(_templates_dir / 'auditor.service') as service_template_file,
         open(_templates_dir / 'auditor.timer') as timer_template_file,
@@ -96,6 +96,7 @@ def install_sysmted_service(chain: str, url: str):
     service_unit = service_template.format(
         python_bin=str(python_bin),
         chain_url=url,
+        db_location=db,
         work_dir=str(work_dir)
     )
     timer_unit = timer_template.format(

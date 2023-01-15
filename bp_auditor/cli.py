@@ -20,10 +20,11 @@ def bpaudit(*args, **kwargs):
 @bpaudit.command()
 @click.option('--chain', '-c', default='telos-mainnet')
 @click.option('--url', '-u', default='https://mainnet.telos.net')
+@click.option('--db', '-d', default='reports.db')
 @click.option('--log-level', '-l', default='INFO')
-def install(chain, url, log_level):
+def install(chain, url, db, log_level):
     logging.basicConfig(level=log_level)
-    install_sysmted_service(chain, url)
+    install_sysmted_service(chain, url, db)
 
 
 @bpaudit.command()

@@ -124,7 +124,10 @@ def produce_monthly_report(
                 if 'ssl_endpoints' in report:
                     for ssl_endpoint in report['ssl_endpoints']:
                         capabilities, url, tlsv = ssl_endpoint
-                        ssl_passed = ssl_passed or ('query' in capabilities and tlsv in ['TLSv1.3', 'TLSv1.2'])
+                        ssl_passed = ssl_passed or (
+                            ('query' in capabilities and tlsv in ['TLSv1.3', 'TLSv1.2']) or
+                            ('full' in capabilities and tlsv in ['TLSv1.3', 'TLSv1.2'])
+                        )
                         ssl_report += f'{json.dumps(capabilities)}, {tlsv}\n'
 
                 p2p_report = ''

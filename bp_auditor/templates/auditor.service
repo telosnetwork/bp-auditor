@@ -3,7 +3,7 @@ Description=BP auditor data gatherer
 
 [Service]
 Type=oneshot
-ExecStart={python_bin}/bpaudit gather -u {chain_url}
+ExecStart={python_bin}/bpaudit gather -u {chain_url} -d {db_location}
 WorkingDirectory={work_dir}
 StandardOutput=file:{work_dir}/bpaudit.log
 StandardError=file:{work_dir}/bpaudit.log
