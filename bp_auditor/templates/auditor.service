@@ -1,0 +1,14 @@
+[Unit]
+Description=BP auditor data gatherer
+
+[Service]
+Type=oneshot
+ExecStart={python_bin}/bpaudit gather -u {chain_url}
+WorkingDirectory={work_dir}
+StandardOutput=file:{work_dir}/bpaudit.log
+StandardError=file:{work_dir}/bpaudit.log
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,9 @@
+[Unit]
+Description=Once a day timer for BP audit data gatherer
+
+[Timer]
+Unit=bpaudit-{chain}.service
+OnCalendar=*-*-* 11:00:00 UTC
+
+[Install]
+WantedBy=timers.target
