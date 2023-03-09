@@ -62,10 +62,13 @@ async def check_producer(chain_url: str, url: str, chain_id: str):
     report['p2p_endpoints'] = []
     for node in p2p_endpoints:
         try:
+
             domain, port = node['p2p_endpoint'].split(':')
+            port = int(port)
 
         except ValueError:
-            continue
+            report['p2p_endpoints'].append(
+                (node['node_type'], node['p2p_endpoint'], 'error'))
 
         try:
             await check_port(domain, port)
@@ -110,6 +113,7 @@ async def check_producer(chain_url: str, url: str, chain_id: str):
     return report
 
 
+import traceback
 async def check_all_producers(
     chain_url: str,
     db_location: str = 'reports.db',
@@ -125,7 +129,16 @@ async def check_all_producers(
     reports = []
     async def get_report(_url: str):
         async with limit:
-            report = await check_producer(chain_url, _url, chain_id)
+            try:
+                report = await check_producer(chain_url, _url, chain_id)
+
+            except BaseException as e:
+                e_text = traceback.format_exc()
+                logging.critical(e_text)
+                report = {
+                    'url': _url,
+                    'exception': e_text
+                }
 
         reports.append(report)
         logging.info(f'finished report {len(reports)}/42')

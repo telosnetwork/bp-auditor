@@ -164,57 +164,60 @@ def produce_monthly_report(
 
                     hist_passed = early_passed and late_passed
 
-                ws.append([
-                    timestamp,
-                    report['url'],
-                    report['bp_json'],
-                    ssl_report,
-                    p2p_report,
-                    hist_report,
-                    report['cpu'] if 'cpu' in report else ''
-                ])
+                if 'exception' in report:
+                    ws.append([timestamp, report['exception']])
+                else:
+                    ws.append([
+                        timestamp,
+                        report['url'],
+                        report['bp_json'],
+                        ssl_report,
+                        p2p_report,
+                        hist_report,
+                        report['cpu'] if 'cpu' in report else ''
+                    ])
 
-                # Set alignment
-                for ord_col in range(ord('A'), ord('G') + 1):
-                    col = chr(ord_col)
-                    coord = col + str(sheets[san_url])
+                    # Set alignment
+                    for ord_col in range(ord('A'), ord('G') + 1):
+                        col = chr(ord_col)
+                        coord = col + str(sheets[san_url])
 
-                    if col == 'D':
-                        if ssl_passed:
-                            set_cell_color(ws, coord, *COLORS_PASSED)
-                        else:
-                            set_cell_color(ws, coord, *COLORS_FAILED)
-
-                    if col == 'E':
-                        if p2p_passed:
-                            set_cell_color(ws, coord, *COLORS_PASSED)
-                        else:
-                            set_cell_color(ws, coord, *COLORS_FAILED)
-
-                    if col == 'F':
-                        if hist_passed:
-                            set_cell_color(ws, coord, *COLORS_PASSED)
-                        else:
-                            set_cell_color(ws, coord, *COLORS_FAILED)
-
-                    if col == 'G':
-                        cpu_val = ws[coord].value
-                        if 'us' in cpu_val:
-                            val = float(cpu_val.split(' ')[0])
-                            rank = 2
-                            if val >= 0 and val <= 300:
-                                rank = 0
-                            elif val > 300 and val < 500:
-                                rank = 1
+                        if col == 'D':
+                            if ssl_passed:
+                                set_cell_color(ws, coord, *COLORS_PASSED)
                             else:
+                                set_cell_color(ws, coord, *COLORS_FAILED)
+
+                        if col == 'E':
+                            if p2p_passed:
+                                set_cell_color(ws, coord, *COLORS_PASSED)
+                            else:
+                                set_cell_color(ws, coord, *COLORS_FAILED)
+
+                        if col == 'F':
+                            if hist_passed:
+                                set_cell_color(ws, coord, *COLORS_PASSED)
+                            else:
+                                set_cell_color(ws, coord, *COLORS_FAILED)
+
+                        if col == 'G':
+                            cpu_val = ws[coord].value
+                            if 'us' in cpu_val:
+                                val = float(cpu_val.split(' ')[0])
                                 rank = 2
+                                if val >= 0 and val <= 300:
+                                    rank = 0
+                                elif val > 300 and val < 500:
+                                    rank = 1
+                                else:
+                                    rank = 2
 
-                            set_cell_color(ws, coord, *COLORS_CPU[rank])
+                                set_cell_color(ws, coord, *COLORS_CPU[rank])
 
-                    ws[coord].alignment = Alignment(
-                        horizontal='left', vertical='top')
+                        ws[coord].alignment = Alignment(
+                            horizontal='left', vertical='top')
 
-                sheets[san_url] += 1
+                    sheets[san_url] += 1
 
         # Fix column size
         for sheet in sheets:
@@ -228,8 +231,9 @@ def produce_monthly_report(
             for row in range(ws.min_row, ws.max_row + 1):
                 row = str(row)
                 cell = ws['D'+row]
-                length = max(10, len(cell.value.split('\n')))
-                ws.row_dimensions[int(row)].height = length * 3
+                if cell.value:
+                    length = max(10, len(cell.value.split('\n')))
+                    ws.row_dimensions[int(row)].height = length * 3
 
         ws = default_ws
 

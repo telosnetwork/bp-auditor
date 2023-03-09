@@ -40,10 +40,10 @@ async def get_tls_version(host, port=443):
     return tls_version
 
 
-async def check_port(domain, port, timeout=5):
+async def check_port(domain, port: int, timeout=5):
     try:
         with trio.move_on_after(timeout) as cs:
-            s = await trio.open_tcp_stream(domain, int(port))
+            s = await trio.open_tcp_stream(domain, port)
             await s.aclose()
 
         if cs.cancelled_caught:
