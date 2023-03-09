@@ -47,8 +47,6 @@ async def get_bp_json(url: str, chain_id: str):
                 raise MalformedJSONError('chain_id not in chains.json')
 
             sub_url = data[chain_id]
-            if not sub_url.startswith('/'):
-                raise MalformedJSONError('seems sub url doesn\'t start with slash')
 
             response = await call_with_retry(
                 asks.get,
