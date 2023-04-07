@@ -11,6 +11,7 @@ from .db import store_reports
 from .xlsx import produce_monthly_report
 from .audit import check_all_producers
 from .utils import install_sysmted_service
+from .telegram import send_file_over_telegram
 
 
 @click.group()
@@ -53,3 +54,10 @@ def gather(url, db, log_level, concurrency):
 def produce(db, doc, log_level):
     logging.basicConfig(level=log_level)
     produce_monthly_report(db, doc)
+
+@bpaudit.command()
+@click.option('--doc', '-D', default='report.xlsx')
+@click.option('--log-level', '-l', default='INFO')
+def sendtg(doc, log_level):
+    logging.basicConfig(level=log_level)
+    send_file_over_telegram(doc)

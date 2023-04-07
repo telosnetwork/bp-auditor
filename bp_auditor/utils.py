@@ -14,34 +14,32 @@ class MalformedJSONError(BaseException):
     ...
 
 
-def validate_bp_json(bp_json: dict):
-    try:
-        assert 'producer_account_name' in bp_json
-        assert 'org' in bp_json
-        assert 'nodes' in bp_json
+def _validate_fields(fields: list[str], obj: dict) -> None:
+    for field in fields:
+        if field not in obj:
+            raise MalformedJSONError(
+                f'json validation error: {field} not present')
 
-    except AssertionError:
-        raise MalformedJSONError('json validation error')
+def validate_bp_json(bp_json: dict):
+    _validate_fields(['producer_account_name', 'org', 'nodes'], bp_json)
 
 
 def validate_block(block: dict):
-    try:
-        assert "timestamp" in block
-        assert "producer" in block
-        assert "confirmed" in block
-        assert "previous" in block
-        assert "transaction_mroot" in block
-        assert "action_mroot" in block
-        assert "schedule_version" in block
-        assert "new_producers" in block
-        assert "producer_signature" in block
-        assert "transactions" in block
-        assert "id" in block
-        assert "block_num" in block
-        assert "ref_block_prefix" in block
-
-    except AssertionError:
-        raise MalformedJSONError('json validation error')
+    _validate_fields([
+        "timestamp",
+        "producer",
+        "confirmed",
+        "previous",
+        "transaction_mroot",
+        "action_mroot",
+        "schedule_version",
+        "new_producers",
+        "producer_signature",
+        "transactions",
+        "id",
+        "block_num",
+        "ref_block_prefix"
+    ], bp_json)
 
 
 async def call_with_retry(
