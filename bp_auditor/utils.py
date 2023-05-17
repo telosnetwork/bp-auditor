@@ -39,7 +39,7 @@ def validate_block(block: dict):
         "id",
         "block_num",
         "ref_block_prefix"
-    ], bp_json)
+    ], block)
 
 
 async def call_with_retry(
