@@ -7,8 +7,14 @@ import trio
 from .queries import *
 
 
-async def check_producer(chain_url: str, url: str, chain_id: str):
-    report = {'url': url}
+async def check_producer(chain_url: str, producer: dict, chain_id: str):
+    report = {'owner': producer['owner']}
+    url = producer['url']
+
+    if not url:
+        report['bp_json'] = f'NO URL ON CHAIN! owner: {producer["owner"]}'
+
+    report['url'] = url
     try:
         bp_json = await get_bp_json(url, chain_id)
         logging.info(f'got bp json for {url}')
@@ -127,16 +133,16 @@ async def check_all_producers(
 
     limit = trio.CapacityLimiter(concurrency)
     reports = []
-    async def get_report(_url: str):
+    async def get_report(_prod: dict):
         async with limit:
             try:
-                report = await check_producer(chain_url, _url, chain_id)
+                report = await check_producer(chain_url, _prod, chain_id)
 
             except BaseException as e:
                 e_text = traceback.format_exc()
                 logging.critical(e_text)
                 report = {
-                    'url': _url,
+                    'url': _prod['url'],
                     'exception': e_text
                 }
 
@@ -145,6 +151,6 @@ async def check_all_producers(
 
     async with trio.open_nursery() as n:
         for producer in producers:
-            n.start_soon(get_report, producer['url'])
+            n.start_soon(get_report, producer)
 
     return reports
