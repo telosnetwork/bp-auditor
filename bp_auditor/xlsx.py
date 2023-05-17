@@ -112,12 +112,11 @@ def produce_monthly_report(
             last_report_time = datetime.fromisoformat(timestamp)
 
             for report in reports:
-                san_url = report['url'].split('://')[1]
-                san_url = san_url.split('/')[0]
-                if san_url not in sheets:
-                    sheets[san_url] = 2
+                owner = report['owner']
+                if owner not in sheets:
+                    sheets[owner] = 2
 
-                ws = get_sheet_or_create(workbook, san_url)
+                ws = get_sheet_or_create(workbook, owner)
 
                 ssl_report = ''
                 ssl_passed = False
@@ -180,7 +179,7 @@ def produce_monthly_report(
                     # Set alignment
                     for ord_col in range(ord('A'), ord('G') + 1):
                         col = chr(ord_col)
-                        coord = col + str(sheets[san_url])
+                        coord = col + str(sheets[owner])
 
                         if col == 'D':
                             if ssl_passed:
@@ -217,7 +216,7 @@ def produce_monthly_report(
                         ws[coord].alignment = Alignment(
                             horizontal='left', vertical='top')
 
-                    sheets[san_url] += 1
+                    sheets[owner] += 1
 
         # Fix column size
         for sheet in sheets:
