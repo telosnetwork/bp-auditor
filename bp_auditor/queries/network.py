@@ -5,15 +5,21 @@ import socket
 
 import trio
 
+from urllib.parse import urlparse
+
 from ..utils import NetworkError
 
 
-async def get_tls_version(host, port=443):
+async def get_tls_version(url):
+
+    target = urlparse(url)
+
     context = ssl.create_default_context()
     try:
         with trio.move_on_after(10) as cscope:
             ssock = await trio.open_ssl_over_tcp_stream(
-                host, port,
+                target.hostname,
+                target.port if target.port else 443,
                 ssl_context=context
             )
 

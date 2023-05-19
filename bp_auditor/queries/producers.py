@@ -4,6 +4,8 @@ import ssl
 import json
 import socket
 
+
+from urllib.parse import urljoin
 from datetime import datetime
 
 import asks
@@ -19,15 +21,15 @@ async def get_bp_json(url: str, chain_id: str):
 
     try:
         response = await call_with_retry(
-            asks.get, f'{url}/chains.json')
+            asks.get, urljoin(url,'chains.json'))
 
         if response.status_code == 404:
             response = await call_with_retry(
-                asks.get, f'{url}/bp.json')
+                asks.get, urljoin(url, 'bp.json'))
 
             if response.status_code == 404:
                 response = await call_with_retry(
-                    asks.get, f'{url}/telos.json')
+                    asks.get, urljoin(url, 'telos.json'))
 
     except ssl.SSLCertVerificationError as e:
         raise NetworkError(str(e))
@@ -50,7 +52,7 @@ async def get_bp_json(url: str, chain_id: str):
 
             response = await call_with_retry(
                 asks.get,
-                f'{url}{sub_url}'
+                urljoin(url, sub_url)
             )
 
             if response.status_code == 404:

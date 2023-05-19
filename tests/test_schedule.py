@@ -7,7 +7,7 @@ from bp_auditor.queries import *
 from bp_auditor.audit import check_producer
 
 
-url = 'https://mainnet.telos.net'
+url = 'https://testnet.telos.net'
 
 
 async def test_check_one():
@@ -19,7 +19,7 @@ async def test_check_one():
 
     logging.info(
         json.dumps(
-            (await check_producer(url, producers[random.randint(0, 41)]['url'], chain_id)),
+            (await check_producer(url, producers[random.randint(0, 41)], chain_id)),
             indent=4
         )
     )
