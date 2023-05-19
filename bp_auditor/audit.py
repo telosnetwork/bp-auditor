@@ -42,14 +42,9 @@ async def check_producer(chain_url: str, producer: dict, chain_id: str):
     report['ssl_endpoints'] = []
     tlsv = None
     for node in ssl_endpoints:
-        try:
-            endpoint = node['ssl_endpoint'].split('://')[1]
-
-        except IndexError:
-            continue
 
         try:
-            tlsv = await get_tls_version(endpoint)
+            tlsv = await get_tls_version(node['ssl_endpoint'])
 
         except NetworkError as e:
             tlsv = str(e)
@@ -103,6 +98,7 @@ async def check_producer(chain_url: str, producer: dict, chain_id: str):
         report['api_endpoints'].append(
             (node['node_type'], node['api_endpoint']))
 
+    logging.info(f'checking history for {api_endpoint}')
     early_block, late_block = await check_history(chain_url, api_endpoint)
     report['history'] = {
         'early': early_block,
