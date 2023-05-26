@@ -92,7 +92,11 @@ async def check_producer(chain_url: str, producer: dict, chain_id: str):
     report['api_endpoints'] = []
     api_endpoint = None
     for node in api_endpoints:
-        if node['node_type'] == 'query' or node['node_type'] == 'full':
+        node_type = node['node_type']
+        if (node_type == 'query' or
+            node_type == 'full' or
+            'query' in node_type or
+            'full' in node_type):
             api_endpoint = node['api_endpoint']
 
         report['api_endpoints'].append(
