@@ -5,7 +5,6 @@ import json
 import socket
 
 
-from urllib.parse import urljoin
 from datetime import datetime
 
 import asks
@@ -14,6 +13,13 @@ import trio
 from ..utils import *
 
 from .antelope import *
+
+
+def urljoin(base_url: str, path: str):
+    if path[0] != '/':
+        path = '/' + path
+
+    return base_url + path
 
 
 async def get_bp_json(url: str, chain_id: str):
@@ -72,6 +78,7 @@ async def check_history(chain_url: str, url: str):
     head_block_num = chain_info['head_block_num']
 
     # get two samples
+    early_block = None
     try:
         with trio.move_on_after(5) as cs:
             early_block = await get_block(
@@ -89,8 +96,9 @@ async def check_history(chain_url: str, url: str):
                 early = (early_block['id'], early_block['block_num'])
 
     except BaseException as e:
-        early = str(e)
+        early = early_block if early_block else str(e)
 
+    late_block = None
     try:
         with trio.move_on_after(5) as cs:
             late_block = await get_block(
@@ -108,7 +116,7 @@ async def check_history(chain_url: str, url: str):
                 late = (late_block['id'], late_block['block_num'])
 
     except BaseException as e:
-        late = str(e)
+        late = late_block if late_block else str(e)
 
     return (early, late)
 

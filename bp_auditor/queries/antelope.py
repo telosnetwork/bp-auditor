@@ -74,4 +74,4 @@ async def get_block(node_url: str, block_num: int) -> dict:
         return response.json()
 
     except json.JSONDecodeError as e:
-        raise MalformedJSONError(str(e))
+        return response.text
