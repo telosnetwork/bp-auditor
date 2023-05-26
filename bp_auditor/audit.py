@@ -92,14 +92,19 @@ async def check_producer(chain_url: str, producer: dict, chain_id: str):
     report['api_endpoints'] = []
     api_endpoint = None
     for node in api_endpoints:
-        if node['node_type'] == 'query':
+        if node['node_type'] == 'query' or node['node_type'] == 'full':
             api_endpoint = node['api_endpoint']
 
         report['api_endpoints'].append(
             (node['node_type'], node['api_endpoint']))
 
-    logging.info(f'checking history for {api_endpoint}')
-    early_block, late_block = await check_history(chain_url, api_endpoint)
+    if api_endpoint:
+        logging.info(f'checking history for {api_endpoint}')
+        early_block, late_block = await check_history(chain_url, api_endpoint)
+
+    else:
+        early_block, late_block = ('couldn\'t figure out api endpoint' for i in range(2))
+
     report['history'] = {
         'early': early_block,
         'late': late_block

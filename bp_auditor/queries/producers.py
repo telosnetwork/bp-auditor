@@ -96,7 +96,11 @@ async def check_history(chain_url: str, url: str):
                 early = (early_block['id'], early_block['block_num'])
 
     except BaseException as e:
-        early = early_block if early_block else str(e)
+        if early_block and isinstance(early_block, str):
+            early = early_block
+
+        else:
+            early = str(e)
 
     late_block = None
     try:
@@ -116,7 +120,11 @@ async def check_history(chain_url: str, url: str):
                 late = (late_block['id'], late_block['block_num'])
 
     except BaseException as e:
-        late = late_block if late_block else str(e)
+        if late_block and isinstance(late_block, str):
+            late = late_block
+
+        else:
+            late = str(e)
 
     return (early, late)
 
